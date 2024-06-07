@@ -1,0 +1,29 @@
+name: Sync Server Configuration
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.zshrc'
+      - '.config/**'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.ANSIBLE_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Run Ansible Playbook
+        run: |
+          ansible-playbook -i ${{ secrets.ANSIBLE_HOST }}, sync-config.yml
+        env:
+          ANSIBLE_HOST_KEY_CHECKING: false
