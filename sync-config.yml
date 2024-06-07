@@ -1,16 +1,80 @@
 ---
 - hosts: 43.143.234.128
-  remote_user: ubuntu
   become: yes
-  become_user: root
   tasks:
+    - name: Update and install basic tools
+      apt:
+        update_cache: yes
+        name:
+          - ssh
+          - vim
+          - wget
+          - curl
+          - sudo
+          - git
+          - openssh-server
+        state: latest
+
+- hosts: 43.143.234.128
+  remote_user: ubuntu
+  tasks:
+    # 下载zsh 以及 oh-my-zsh
+    - name: Install zsh
+      apt:
+        name: zsh
+        state: latest
+
+    - name: Clone oh-my-zsh repository
+      git:
+        repo: https://github.com/ohmyzsh/ohmyzsh.git
+        dest: ~/.oh-my-zsh
+
+    - name: Clone zsh-syntax-highlighting plugin
+      git:
+        repo: https://github.com/zsh-users/zsh-syntax-highlighting.git
+        dest: '~/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting'
+
+    - name: Clone zsh-autosuggestions plugin
+      git:
+        repo: https://github.com/zsh-users/zsh-autosuggestions
+        dest: '~/.oh-my-zsh/custom/plugins/zsh-autosuggestions'
+
+    # 下载nvim
+    - name: Install Neovim dependencies
+      apt:
+        name:
+          - software-properties-common
+          - build-essential
+        state: latest
+
+    - name: Add Neovim PPA and install Neovim
+      block:
+        - name: Add repository
+          apt_repository:
+            repo: ppa:neovim-ppa/unstable
+            state: present
+
+        - name: Install Neovim
+          apt:
+            update_cache: yes
+            name: neovim
+            state: latest
+
+    - name: Change shell to zsh
+      command: chsh -s /bin/zsh
+
+    - name: Clean apt cache
+      apt:
+        autoclean: yes
+        autoremove: yes
+    # 同步目录
     - name: Synchronize .zshrc
       synchronize:
         src: .zshrc
-        dest: /root/.zshrc
+        dest: ~/.zshrc
 
     - name: Synchronize .config
       synchronize:
         src: .config/
-        dest: /root/.config/
+        dest: ~/.config/
         recursive: yes
