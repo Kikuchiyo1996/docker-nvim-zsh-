@@ -1,5 +1,5 @@
 ---
-- hosts: your_servers
+- hosts: 43.143.234.128
   become: yes
   tasks:
     - name: Synchronize .zshrc
