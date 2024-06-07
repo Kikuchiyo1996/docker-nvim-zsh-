@@ -1,0 +1,14 @@
+---
+- hosts: your_servers
+  become: yes
+  tasks:
+    - name: Synchronize .zshrc
+      synchronize:
+        src: .zshrc
+        dest: /root/.zshrc
+
+    - name: Synchronize .config
+      synchronize:
+        src: .config/
+        dest: /root/.config/
+        recursive: yes
