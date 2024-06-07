@@ -1,6 +1,7 @@
 ---
 - hosts: 43.143.234.128
-  become: yes
+  # become: yes
+  remote_user: ubuntu
   tasks:
     - name: Update and install basic tools
       apt:
