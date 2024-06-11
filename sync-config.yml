@@ -1,6 +1,7 @@
 ---
 - hosts: 43.143.234.128
-  # become: yes
+  become: yes
+  become_method: sudo
   remote_user: ubuntu
   tasks:
     - name: Update and install basic tools
@@ -18,6 +19,8 @@
 
 - hosts: 43.143.234.128
   remote_user: ubuntu
+  become: yes
+  become_method: sudo
   tasks:
     # 下载zsh 以及 oh-my-zsh
     - name: Install zsh
